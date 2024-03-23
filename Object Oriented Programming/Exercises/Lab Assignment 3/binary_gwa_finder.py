@@ -2,7 +2,7 @@
 # Programmed by: Christian Kristopher D. Dalayoan
 # Course, Year and Section: BSCpE 1-3
 # Instructor: Engr. Julius S. Cansino
-# Date Submitted: March 16, 2024
+# Date Submitted: March 23, 2024
 
 # Write a Python program that read a binary file containing the name of 20 students together with their GWA.  
 # The program will output the name of the student who got the highest GWA (including the GWA).
