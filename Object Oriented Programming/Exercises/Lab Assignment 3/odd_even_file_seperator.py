@@ -2,7 +2,7 @@
 # Programmed by: Christian Kristopher D. Dalayoan
 # Course, Year and Section: BSCpE 1-3
 # Instructor: Engr. Julius S. Cansino
-# Date Submitted: March 16, 2024
+# Date Submitted: March 23, 2024
 
 # Write a Python program that reads a text file named numbers.txt that contains 20 integers. 
 # The program will create two other text files; 
