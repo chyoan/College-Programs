@@ -70,7 +70,19 @@ def decimal_to_hexadecimal(decimal_number):
     return hexadecimal_number
 
 def binary_to_decimal(binary_number):
-    ...
+    decimal_number = 0
+    exponent = 0
+    for digit in binary_number[::-1]:
+        if digit == '0':
+            exponent += 1
+            continue
+        value = 2 ** exponent
+        exponent += 1
+        decimal_number += value
+
+    return decimal_number
+
+print(binary_to_decimal("1010101"))
 
 def binary_to_octal(binary_number):
     ...
