@@ -2,7 +2,7 @@
 # Note: For negative numbers, the program does not use two's complement. 
 # Instead, it simply prepends a "-" sign to the representation of the absolute value of the number in the target number system.
 
-def decimal_to_binary(decimal_number):  
+def decimal_to_binary(decimal_number: float) -> str:
     binary_number = ''
     integer_part = int(decimal_number)
     decimal_part = decimal_number - integer_part
@@ -35,7 +35,7 @@ def decimal_to_binary(decimal_number):
     
     return binary_number
 
-def decimal_to_octal(decimal_number):
+def decimal_to_octal(decimal_number: float) -> str:
     octal_number = ''
     integer_part = int(decimal_number)
     decimal_part = decimal_number - integer_part
@@ -68,7 +68,7 @@ def decimal_to_octal(decimal_number):
 
     return octal_number
 
-def decimal_to_hexadecimal(decimal_number):
+def decimal_to_hexadecimal(decimal_number: float) -> str:
     hexadecimal_conversion = {10: 'A', 11: 'B', 12: 'C', 13: 'D', 14: 'E', 15: 'F'}
     hexadecimal_number = ''
     integer_part = int(decimal_number)
@@ -107,16 +107,35 @@ def decimal_to_hexadecimal(decimal_number):
     
     return hexadecimal_number
 
-def binary_to_decimal(binary_number):
+def binary_to_decimal(binary_number: str) -> float:
     decimal_number = 0
-    exponent = 0
-    for digit in binary_number[::-1]:
-        if digit == '0':
-            exponent += 1
-            continue
-        value = 2 ** exponent
-        exponent += 1
-        decimal_number += value
+    binary_exponent = 0
+
+    if '.' in binary_number:
+        integer_binary, decimal_binary = binary_number.split('.')
+    else:
+        integer_binary = binary_number
+        decimal_binary = ''
+        
+    if integer_binary[0] == '-':        
+        is_negative = True
+        integer_binary = integer_binary[1:]
+    else:
+        is_negative = False
+
+    for digit in integer_binary[::-1]:
+        if digit == '1':
+            decimal_number += 2 ** binary_exponent
+        binary_exponent += 1
+
+    decimal_exponent = -1
+    for digit in decimal_binary:
+        if digit == '1':
+            decimal_number += 2 ** decimal_exponent
+        decimal_exponent -= 1
+    
+    if is_negative:
+        decimal_number *= -1
 
     return decimal_number
 
@@ -188,7 +207,13 @@ def main():
                     print("Invalid choice. Please enter a number between 1 and 4.")
 
         elif choice1 == '2':
-            binary_number = input("\nEnter a binary number: ")
+            while True:
+                binary_number = input("\nEnter a binary number: ")
+                if (binary_number[0] == '-' and all(char in '01.' for char in binary_number[1:])) or all(digit in '01.' for digit in binary_number):
+                    break
+                else:
+                    print("Invalid binary number.")
+
             while True:
                 print("\nChoose the type of conversion you want to perform:")
                 print("[1] Binary to Decimal")
