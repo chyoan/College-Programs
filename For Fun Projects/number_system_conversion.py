@@ -6,13 +6,15 @@ def decimal_to_binary(decimal_number):
     binary_number = ''
     integer_part = int(decimal_number)
     decimal_part = decimal_number - integer_part
-    if integer_part == 0 and decimal_number == 0:
+
+    if integer_part == 0 and decimal_part == 0:
         return '0'
     elif integer_part < 0:
         is_negative = True
         integer_part = abs(integer_part)
     else:
         is_negative = False
+    
     while integer_part > 0:
         remainder = integer_part % 2
         integer_part = integer_part // 2
@@ -27,6 +29,7 @@ def decimal_to_binary(decimal_number):
             fractional_part += str(integer_part)
             decimal_part -= integer_part
         binary_number += fractional_part
+    
     if is_negative:
         binary_number = '-' + binary_number
     
@@ -34,19 +37,31 @@ def decimal_to_binary(decimal_number):
 
 def decimal_to_octal(decimal_number):
     octal_number = ''
+    integer_part = int(decimal_number)
+    decimal_part = decimal_number - integer_part
 
-    if decimal_number == 0:
+    if integer_part == 0 and decimal_part == 0:
         return '0'
-    elif decimal_number < 0:
+    elif integer_part < 0:
         is_negative = True
-        decimal_number = abs(decimal_number)
+        integer_part = abs(integer_part)
     else:
         is_negative = False
 
-    while decimal_number > 0:
-        remainder = decimal_number % 8
-        decimal_number = decimal_number // 8
+    while integer_part > 0:
+        remainder = integer_part % 8
+        integer_part = integer_part // 8
         octal_number = str(remainder) + octal_number
+
+    if decimal_part > 0:
+        octal_number += '.'
+        fractional_part = ''
+        while len(fractional_part) <= 10:
+            decimal_part = decimal_part * 8
+            integer_part = int(decimal_part)
+            fractional_part += str(integer_part)
+            decimal_part -= integer_part
+        octal_number += fractional_part
     
     if is_negative:
         octal_number = '-' + octal_number
@@ -56,23 +71,37 @@ def decimal_to_octal(decimal_number):
 def decimal_to_hexadecimal(decimal_number):
     hexadecimal_conversion = {10: 'A', 11: 'B', 12: 'C', 13: 'D', 14: 'E', 15: 'F'}
     hexadecimal_number = ''
+    integer_part = int(decimal_number)
+    decimal_part = decimal_number - integer_part
 
-    if decimal_number == 0:
+    if integer_part == 0 and decimal_part == 0:
         return '0'
-    elif decimal_number < 0:
+    elif integer_part < 0:
         is_negative = True
-        decimal_number = abs(decimal_number)
+        integer_part = abs(integer_part)
     else:
         is_negative = False
     
-    while decimal_number > 0:
-        remainder = decimal_number % 16
+    while integer_part > 0:
+        remainder = integer_part % 16
         if remainder in hexadecimal_conversion:
             remainder = hexadecimal_conversion[remainder]
 
-        decimal_number = decimal_number // 16
+        integer_part = integer_part // 16
         hexadecimal_number = str(remainder) + hexadecimal_number
     
+    if decimal_part > 0:
+        hexadecimal_number += '.'
+        fractional_part = ''
+        while len(fractional_part) <= 10:
+            decimal_part = decimal_part * 16
+            integer_part = int(decimal_part)
+            decimal_part -= integer_part
+            if integer_part in hexadecimal_conversion:
+                integer_part = hexadecimal_conversion[integer_part]
+            fractional_part += str(integer_part)
+        hexadecimal_number += fractional_part
+
     if is_negative:
         hexadecimal_number = '-' + hexadecimal_number
     
