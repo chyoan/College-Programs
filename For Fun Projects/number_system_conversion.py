@@ -5,7 +5,7 @@
 def decimal_to_binary(decimal_number: float) -> str:
     binary_number = ''
     integer_part = int(decimal_number)
-    decimal_part = decimal_number - integer_part
+    decimal_part = abs(decimal_number) - abs(integer_part)
 
     if integer_part == 0 and decimal_part == 0:
         return '0'
@@ -42,7 +42,7 @@ def decimal_to_binary(decimal_number: float) -> str:
 def decimal_to_octal(decimal_number: float) -> str:
     octal_number = ''
     integer_part = int(decimal_number)
-    decimal_part = decimal_number - integer_part
+    decimal_part = abs(decimal_number) - abs(integer_part)
 
     if integer_part == 0 and decimal_part == 0:
         return '0'
@@ -80,7 +80,7 @@ def decimal_to_hexadecimal(decimal_number: float) -> str:
     hexadecimal_conversion = {10: 'A', 11: 'B', 12: 'C', 13: 'D', 14: 'E', 15: 'F'}
     hexadecimal_number = ''
     integer_part = int(decimal_number)
-    decimal_part = decimal_number - integer_part
+    decimal_part = abs(decimal_number) - abs(integer_part)
 
     if integer_part == 0 and decimal_part == 0:
         return '0'
@@ -196,18 +196,95 @@ def binary_to_octal(binary_number: str) -> str:
 
     octal_number = integer_octal      
     if decimal_octal != '':
-        octal_number += '.' + decimal_octal      
+        octal_number += '.' + decimal_octal.rstrip('0')      
 
     if is_negative:
         octal_number = '-' + octal_number
 
     return octal_number
 
-def binary_to_hexadecimal(binary_number):
-    ...
+def binary_to_hexadecimal(binary_number: str) -> str:
+    hexadecimal_number = ''
+    hexadecimal_conversion = {10: 'A', 11: 'B', 12: 'C', 13: 'D', 14: 'E', 15: 'F'}
 
-def octal_to_decimal(octal_number):
-    ...
+    if '.' in binary_number:
+        integer_binary, decimal_binary = binary_number.split('.')
+    else:
+        integer_binary = binary_number
+        decimal_binary = ''
+
+    if integer_binary[0] == '-':
+        is_negative = True
+        integer_binary = integer_binary[1:]
+    else:
+        is_negative = False
+
+    while len(integer_binary) % 4 != 0:
+        integer_binary = '0' + integer_binary
+    while len(decimal_binary) % 4 != 0:
+        decimal_binary += '0'
+    
+    integer_binary_group = [integer_binary[i:i+4] for i in range(0, len(integer_binary), 4)]
+    decimal_binary_group = [decimal_binary[i:i+4] for i in range(0, len(decimal_binary), 4)]
+
+    integer_hexadecimal = ''
+    for group in integer_binary_group:
+        integer_exponent = 0
+        hexadecimal_digit = 0
+        for digit in group[::-1]:
+            if int(digit) == 1:
+                hexadecimal_digit += 2 ** integer_exponent
+            integer_exponent += 1
+        if hexadecimal_digit in hexadecimal_conversion:
+            hexadecimal_digit = hexadecimal_conversion[hexadecimal_digit]
+        integer_hexadecimal += str(hexadecimal_digit)
+
+    decimal_hexadecimal = ''
+    for group in decimal_binary_group:
+        decimal_exponent = 0
+        hexadecimal_digit = 0
+        for digit in group[::-1]:
+            if int(digit) == 1:
+                hexadecimal_digit += 2 ** decimal_exponent
+            decimal_exponent += 1
+        if hexadecimal_digit in hexadecimal_conversion:
+            hexadecimal_digit = hexadecimal_conversion[hexadecimal_digit]
+        decimal_hexadecimal += str(hexadecimal_digit)
+    
+    hexadecimal_number = integer_hexadecimal
+    if decimal_hexadecimal != '':
+        hexadecimal_number += '.' + decimal_hexadecimal
+    if is_negative:
+        hexadecimal_number = '-' + hexadecimal_number
+
+    return hexadecimal_number
+
+def octal_to_decimal(octal_number: float) -> float:
+    decimal_number = 0
+    integer_part, decimal_part = str(octal_number).split('.')
+
+    if integer_part == '0' and decimal_part == '0':
+        return 0
+    elif integer_part[0] == '-':
+        is_negative = True
+        integer_part = integer_part[1:]
+    else:
+        is_negative = False
+    
+    integer_exponent = 0
+    for digit in integer_part[::-1]:
+        decimal_number += int(digit) * 8 ** integer_exponent
+        integer_exponent += 1
+
+    decimal_exponent = -1
+    for digit in decimal_part:
+        decimal_number += int(digit) * 8 ** decimal_exponent
+        decimal_exponent -= 1
+
+    if is_negative:
+        decimal_number *= -1
+    
+    return decimal_number
 
 def octal_to_binary(octal_number):
     ...
@@ -300,7 +377,17 @@ def main():
                     print("Invalid choice. Please enter a number between 1 and 4.")
 
         elif choice1 == '3':
-            octal_number = input("\nEnter an octal number: ")
+            while True:
+                try:
+                    octal_number = input("\nEnter an octal number: ")
+                    if '8' in octal_number or '9' in octal_number:
+                        raise ValueError("Octal numbers can only contain digits 0-7.")
+                    octal_number = float(octal_number)
+                    break
+                except ValueError as e:
+                    print(e)
+                    continue
+
             while True:
                 print("\nChoose the type of conversion you want to perform:")
                 print("[1] Octal to Decimal")
