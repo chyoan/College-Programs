@@ -19,6 +19,9 @@ def decimal_to_binary(decimal_number: float) -> str:
         remainder = integer_part % 2
         integer_part = integer_part // 2
         binary_number = str(remainder) + binary_number
+
+    if binary_number == '':
+        binary_number = '0'
     
     if decimal_part > 0:
         binary_number += '.'
@@ -28,6 +31,7 @@ def decimal_to_binary(decimal_number: float) -> str:
             integer_part = int(decimal_part)
             fractional_part += str(integer_part)
             decimal_part -= integer_part
+        fractional_part = fractional_part.rstrip('0')    
         binary_number += fractional_part
     
     if is_negative:
@@ -53,6 +57,9 @@ def decimal_to_octal(decimal_number: float) -> str:
         integer_part = integer_part // 8
         octal_number = str(remainder) + octal_number
 
+    if octal_number == '':
+        octal_number = '0'
+
     if decimal_part > 0:
         octal_number += '.'
         fractional_part = ''
@@ -61,6 +68,7 @@ def decimal_to_octal(decimal_number: float) -> str:
             integer_part = int(decimal_part)
             fractional_part += str(integer_part)
             decimal_part -= integer_part
+        fractional_part = fractional_part.rstrip('0')
         octal_number += fractional_part
     
     if is_negative:
@@ -90,6 +98,9 @@ def decimal_to_hexadecimal(decimal_number: float) -> str:
         integer_part = integer_part // 16
         hexadecimal_number = str(remainder) + hexadecimal_number
     
+    if hexadecimal_number == '':
+        hexadecimal_number = '0'
+    
     if decimal_part > 0:
         hexadecimal_number += '.'
         fractional_part = ''
@@ -100,6 +111,7 @@ def decimal_to_hexadecimal(decimal_number: float) -> str:
             if integer_part in hexadecimal_conversion:
                 integer_part = hexadecimal_conversion[integer_part]
             fractional_part += str(integer_part)
+        fractional_part = fractional_part.rstrip('0')     
         hexadecimal_number += fractional_part
 
     if is_negative:
@@ -139,8 +151,57 @@ def binary_to_decimal(binary_number: str) -> float:
 
     return decimal_number
 
-def binary_to_octal(binary_number):
-    ...
+def binary_to_octal(binary_number: str) -> str:
+    octal_number = ''
+
+    if '.' in binary_number:
+        integer_binary, decimal_binary = binary_number.split('.')
+    else:
+        integer_binary = binary_number
+        decimal_binary = ''
+
+    if integer_binary[0] == '-':
+        is_negative = True
+        integer_binary = integer_binary[1:]
+    else:
+        is_negative = False
+
+    while len(integer_binary) % 3 != 0:
+        integer_binary = '0' + integer_binary
+    while len(decimal_binary) % 3 != 0:
+        decimal_binary += '0'
+
+    integer_binary_group = [integer_binary[i:i+3] for i in range(0, len(integer_binary), 3)]
+    decimal_binary_group = [decimal_binary[i:i+3] for i in range(0, len(decimal_binary), 3)]
+
+    integer_octal = ''
+    for group in integer_binary_group:
+        integer_exponent = 0
+        octal_digit = 0
+        for digit in group[::-1]:
+            if int(digit) == 1:
+                octal_digit += 2 ** integer_exponent
+            integer_exponent += 1
+        integer_octal += str(octal_digit)
+    
+    decimal_octal = ''
+    for group in decimal_binary_group:
+        decimal_exponent = 0
+        octal_digit = 0
+        for digit in group[::-1]:
+            if int(digit) == 1:
+                octal_digit += 2 ** decimal_exponent
+            decimal_exponent += 1
+        decimal_octal += str(octal_digit)
+
+    octal_number = integer_octal      
+    if decimal_octal != '':
+        octal_number += '.' + decimal_octal      
+
+    if is_negative:
+        octal_number = '-' + octal_number
+
+    return octal_number
 
 def binary_to_hexadecimal(binary_number):
     ...
@@ -209,7 +270,8 @@ def main():
         elif choice1 == '2':
             while True:
                 binary_number = input("\nEnter a binary number: ")
-                if (binary_number[0] == '-' and all(char in '01.' for char in binary_number[1:])) or all(digit in '01.' for digit in binary_number):
+                if (binary_number[0] == '-' and all(char in '01.' for char in binary_number[1:]) and binary_number.count('.') <= 1) \
+                or (all(digit in '01.' for digit in binary_number) and binary_number.count('.') <= 1):
                     break
                 else:
                     print("Invalid binary number.")
