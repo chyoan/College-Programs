@@ -286,8 +286,39 @@ def octal_to_decimal(octal_number: float) -> float:
     
     return decimal_number
 
-def octal_to_binary(octal_number):
-    ...
+def octal_to_binary(octal_number: float) -> str:
+    binary_number = ''
+    integer_part, decimal_part = str(octal_number).split('.')
+    octal_representation_binary = {'0': '000',
+                                   '1': '001',
+                                   '2': '010',
+                                   '3': '011',
+                                   '4': '100',
+                                   '5': '101',
+                                   '6': '110',
+                                   '7': '111'}
+
+    if integer_part == '0' and decimal_part == '0':
+        return '0'
+    elif integer_part[0] == '-':
+        is_negative = True
+        integer_part = integer_part[1:]
+    else:
+        is_negative = False
+
+    for octal, binary in octal_representation_binary.items():
+        integer_part = integer_part.replace(octal, binary)
+        decimal_part = decimal_part.replace(octal, binary)
+    
+    if '.' in str(octal_number) and decimal_part != '000':
+        binary_number = integer_part.lstrip('0') + '.' + decimal_part.rstrip('0')
+    else:
+        binary_number = integer_part.lstrip('0')
+    
+    if is_negative:
+        binary_number = '-' + binary_number
+
+    return binary_number
 
 def octal_to_hexadecimal(octal_number):
     ...
