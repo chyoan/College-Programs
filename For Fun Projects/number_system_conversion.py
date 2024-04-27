@@ -320,11 +320,105 @@ def octal_to_binary(octal_number: float) -> str:
 
     return binary_number
 
-def octal_to_hexadecimal(octal_number):
-    ...
+def octal_to_hexadecimal(octal_number: float) -> str:
+    hexadecimal_number = ''
+    integer_part, decimal_part = str(octal_number).split('.')
+    hexadecimal_conversion = {10: 'A', 11: 'B', 12: 'C', 13: 'D', 14: 'E', 15: 'F'}
+    octal_representation_binary = {'0': '000',
+                                   '1': '001',
+                                   '2': '010',
+                                   '3': '011',
+                                   '4': '100',
+                                   '5': '101',
+                                   '6': '110',
+                                    '7': '111'}
+    
+    if integer_part == '0' and decimal_part == '0':
+        return '0'
+    elif integer_part[0] == '-':
+        is_negative = True
+        integer_part = integer_part[1:]
+    else:
+        is_negative = False
 
-def hexadecimal_to_decimal(hexadecimal_number):
-    ...
+    for octal, binary in octal_representation_binary.items():
+        integer_part = integer_part.replace(octal, binary)
+        decimal_part = decimal_part.replace(octal, binary)
+    
+    while len(integer_part) % 4 != 0:
+        integer_part = '0' + integer_part
+    while len(decimal_part) % 4 != 0:
+        decimal_part += '0'
+    
+    integer_part_group = [integer_part[i:i+4] for i in range(0, len(integer_part), 4)]
+    decimal_part_group = [decimal_part[i:i+4] for i in range(0, len(decimal_part), 4)]
+
+    integer_hexadecimal = ''
+    for group in integer_part_group:
+        integer_exponent = 0
+        hexadecimal_digit = 0
+        for digit in group[::-1]:
+            if int(digit) == 1:
+                hexadecimal_digit += 2 ** integer_exponent
+            integer_exponent += 1
+        if hexadecimal_digit in hexadecimal_conversion:
+            hexadecimal_digit = hexadecimal_conversion[hexadecimal_digit]
+        integer_hexadecimal += str(hexadecimal_digit)
+
+    decimal_hexadecimal = ''
+    for group in decimal_part_group:
+        decimal_exponent = 0
+        hexadecimal_digit = 0
+        for digit in group[::-1]:
+            if int(digit) == 1:
+                hexadecimal_digit += 2 ** decimal_exponent
+            decimal_exponent += 1
+        if hexadecimal_digit in hexadecimal_conversion:
+            hexadecimal_digit = hexadecimal_conversion[hexadecimal_digit]
+        decimal_hexadecimal += str(hexadecimal_digit)
+    
+    hexadecimal_number = integer_hexadecimal.lstrip('0')
+    if decimal_hexadecimal.rstrip('0') != '':
+        hexadecimal_number += '.' + decimal_hexadecimal.rstrip('0')
+    if is_negative:
+        hexadecimal_number = '-' + hexadecimal_number
+    
+    return hexadecimal_number
+
+def hexadecimal_to_decimal(hexadecimal_number: str) -> float:
+    decimal_number = 0
+    hexadecimal_conversion = {'A': 10, 'B': 11, 'C': 12, 'D': 13, 'E': 14, 'F': 15}
+
+    if '.' in hexadecimal_number:
+        integer_hexadecimal, decimal_hexadecimal = hexadecimal_number.split('.')
+    else:
+        integer_hexadecimal = hexadecimal_number
+        decimal_hexadecimal = ''
+    
+    if integer_hexadecimal[0] == '-':
+        is_negative = True
+        integer_hexadecimal = integer_hexadecimal[1:]
+    else:
+        is_negative = False
+    
+    integer_exponent = 0
+    for ch in integer_hexadecimal[::-1]:
+        if ch in hexadecimal_conversion:
+            ch = hexadecimal_conversion[ch]
+        decimal_number += int(ch) * 16 ** integer_exponent
+        integer_exponent += 1
+
+    decimal_exponent = -1
+    for ch in decimal_hexadecimal:
+        if ch in hexadecimal_conversion:
+            ch = hexadecimal_conversion[ch]
+        decimal_number += int(ch) * 16 ** decimal_exponent
+        decimal_exponent -= 1
+
+    if is_negative:
+        decimal_number *= -1
+    
+    return decimal_number
 
 def hexadecimal_to_binary(hexadecimal_number):
     ...
@@ -443,7 +537,16 @@ def main():
                     print("Invalid choice. Please enter a number between 1 and 4.")
 
         elif choice1 == '4':
-            hexadecimal_number = input("\nEnter a hexadecimal number: ")
+            while True:
+                hexadecimal_number = input("\nEnter a hexadecimal number: ")
+                if any(char.isalpha() for char in hexadecimal_number):
+                    hexadecimal_number = hexadecimal_number.upper()
+                if (hexadecimal_number[0] == '-' and all(char in '0123456789ABCDEF.' for char in hexadecimal_number[1:]) and hexadecimal_number.count('.') <= 1) \
+                or (all(char in '0123456789ABCDEF.' for char in hexadecimal_number) and hexadecimal_number.count('.') <= 1):
+                    break
+                else:
+                    print("Invalid hexadecimal number.")
+                    
             while True:
                 print("\nChoose the type of conversion you want to perform:")
                 print("[1] Hexadecimal to Decimal")
