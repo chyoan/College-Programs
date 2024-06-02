@@ -1,0 +1,3 @@
+CompSci 565
+Number of students: 6
+Average mark: 66
